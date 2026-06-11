@@ -93,7 +93,7 @@ namespace offset {
     constexpr ptrdiff_t m_flViewmodelFOV = 0x1B7C;
     constexpr ptrdiff_t m_bIsScoped = 0x1C50;
 
-    constexpr ptrdiff_t dwLocalPlayerController = 0x2320720;
-    constexpr ptrdiff_t m_iDesiredFOV = 0x78C;
+    constexpr ptrdiff_t dwLocalPlayerController = 0x1A87040;
+    constexpr ptrdiff_t m_iDesiredFOV = 0x6F4;
     constexpr ptrdiff_t m_flStamina = 0x69C;
 }

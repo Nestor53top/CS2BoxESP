@@ -1,6 +1,5 @@
 #pragma once
 #include <stdint.h>
-#include <math.h>
 #include <windows.h>
 #include <d3d11.h>
 #include "MinHook/MinHook.h"
@@ -56,23 +55,8 @@ DWORD WINAPI FOVThread(LPVOID lpParam) {
 
             __try {
                 uintptr_t controller = *(uintptr_t*)(client + offset::dwLocalPlayerController);
-                uintptr_t localPawn = *(uintptr_t*)(client + offset::dwLocalPlayerPawn);
-
-                if (controller && localPawn) {
-                    bool isScoped = *(bool*)(localPawn + offset::m_bIsScoped);
-                    if (isScoped) { Sleep(50); continue; }
-
+                if (controller) {
                     *(int*)(controller + offset::m_iDesiredFOV) = Config::iFOV;
-
-                    uintptr_t cameraServices = *(uintptr_t*)(localPawn + offset::m_pCameraServices);
-                    if (cameraServices) {
-                        *(int*)(cameraServices + offset::m_iFOV) = Config::iFOV;
-                    }
-
-                    float fovRad = (float)Config::iFOV * 0.5f * 3.14159265f / 180.0f;
-                    float baseRad = 45.0f * 3.14159265f / 180.0f;
-                    float vmFov = 68.0f * (tanf(fovRad) / tanf(baseRad));
-                    *(float*)(localPawn + offset::m_flViewmodelFOV) = vmFov;
                 }
             } __except(1) {}
         }
