@@ -1,0 +1,28 @@
+# Build outputs
+CS2BoxESP/Release/
+CS2BoxESP/output/
+output/
+*.obj
+*.pdb
+*.ipdb
+*.iobj
+*.dll
+*.lib
+*.exp
+*.log
+*.recipe
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.ncb
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store

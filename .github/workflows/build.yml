@@ -1,0 +1,68 @@
+name: Build CS2BoxESP
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  check-offsets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch latest offsets from cs2-dumper
+        run: |
+          curl -sL https://github.com/a2x/cs2-dumper/raw/main/output/offsets.hpp -o /tmp/offsets_new.hpp
+          curl -sL https://github.com/a2x/cs2-dumper/raw/main/output/client_dll.hpp -o /tmp/client_dll_new.hpp
+
+      - name: Compare offsets
+        run: |
+          echo "=== Comparing offsets.hpp ==="
+          if ! diff -q CS2BoxESP/offsets/offsets.hpp /tmp/offsets_new.hpp > /dev/null 2>&1; then
+            echo "::error::offsets.hpp is outdated! Run cs2-dumper to update."
+            diff CS2BoxESP/offsets/offsets.hpp /tmp/offsets_new.hpp || true
+            exit 1
+          fi
+          echo "offsets.hpp is up to date."
+
+          echo "=== Comparing client_dll.hpp ==="
+          if ! diff -q CS2BoxESP/offsets/client_dll.hpp /tmp/client_dll_new.hpp > /dev/null 2>&1; then
+            echo "::error::client_dll.hpp is outdated! Run cs2-dumper to update."
+            diff CS2BoxESP/offsets/client_dll.hpp /tmp/client_dll_new.hpp || true
+            exit 1
+          fi
+          echo "client_dll.hpp is up to date."
+
+          echo "All offsets are current."
+
+  build:
+    needs: check-offsets
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build
+        run: msbuild CS2BoxESP/CS2BoxESP.sln /p:Configuration=Release /p:Platform=x64
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CS2BoxESP
+          path: CS2BoxESP/output/CS2BoxESP.dll
+          if-no-files-found: error
