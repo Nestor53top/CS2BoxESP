@@ -31,6 +31,8 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 LRESULT __stdcall hkWndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     if (uMsg == WM_KEYDOWN && wParam == VK_INSERT) {
         Config::bMenuOpen = !Config::bMenuOpen;
+        MenuSystem::bAnimSwitch = Config::bMenuOpen;
+        MenuSystem::bMenuOpened = Config::bMenuOpen;
         return 1;
     }
     if (Config::bMenuOpen) {
