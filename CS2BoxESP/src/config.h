@@ -1,6 +1,6 @@
 #pragma once
 #include <windows.h>
-#include "imgui/imgui.h"
+#include "imgui.h"
 
 namespace Config {
     inline bool bMenuOpen = true;
@@ -23,4 +23,11 @@ namespace Config {
     inline int iSparksDensity = 100;
     inline bool bAsh = false;
     inline int iAshDensity = 180;
+
+    inline bool bAimbot = false;
+    inline float flAimbotFOV = 30.0f;
+    inline float flAimbotSmoothing = 5.0f;
+
+    inline bool bAutoBhop = false;
+    inline bool bAutoStrafe = false;
 }

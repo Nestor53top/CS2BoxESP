@@ -96,4 +96,17 @@ namespace offset {
     constexpr ptrdiff_t dwLocalPlayerController = 0x1A87040;
     constexpr ptrdiff_t m_iDesiredFOV = 0x6F4;
     constexpr ptrdiff_t m_flStamina = 0x69C;
+
+    constexpr ptrdiff_t m_iShotsFired = 0x239C;
+    constexpr ptrdiff_t m_vecViewOffset = 0xCB0;
+    constexpr ptrdiff_t m_angEyeAngles = 0x150 + 0x40;
+    constexpr ptrdiff_t m_vecAbsVelocity = 0x120;
+    constexpr ptrdiff_t m_vecForce = 0x120;
+    constexpr ptrdiff_t m_nTickBase = 0x1D48;
+    constexpr ptrdiff_t m_pInButtonState = 0x40;
+    constexpr ptrdiff_t m_nButtons = 0x38;
+    constexpr ptrdiff_t m_nMouseDeltaX = 0x18;
+    constexpr ptrdiff_t m_nMouseDeltaY = 0x1C;
+    constexpr ptrdiff_t m_flForwardMove = 0x24;
+    constexpr ptrdiff_t m_flSideMove = 0x28;
 }

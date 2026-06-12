@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <math.h>
 #include <windows.h>
 #include <d3d11.h>
 #include "MinHook/MinHook.h"
@@ -13,6 +14,8 @@
 #include "Utils/Types.h"
 #include "Utils/Math.h"
 #include "esp.h"
+#include "features/aimbot.h"
+#include "features/bhop.h"
 
 ID3D11Device* g_pd3dDevice = nullptr;
 ID3D11DeviceContext* g_pd3dDeviceContext = nullptr;
@@ -46,6 +49,9 @@ LRESULT __stdcall hkWndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain*, UINT, UINT);
 Present_t oPresent = nullptr;
 
+typedef void(__stdcall* CreateMove_t)(uintptr_t, int, void*);
+CreateMove_t oCreateMove = nullptr;
+
 DWORD WINAPI FOVThread(LPVOID lpParam) {
     uintptr_t client = 0;
     while (!g_Unloading) {
@@ -63,6 +69,20 @@ DWORD WINAPI FOVThread(LPVOID lpParam) {
         Sleep(16);
     }
     return 0;
+}
+
+void __stdcall hkCreateMove(uintptr_t rcx, int sequence_number, void* a3) {
+    oCreateMove(rcx, sequence_number, a3);
+
+    if (Config::bAimbot || Config::bAutoBhop || Config::bAutoStrafe) {
+        uintptr_t client = (uintptr_t)GetModuleHandleA("client.dll");
+        if (client) {
+            __try {
+                if (Config::bAimbot) AimbotRun(client);
+                if (Config::bAutoBhop || Config::bAutoStrafe) BhopRun(client);
+            } __except(1) {}
+        }
+    }
 }
 
 bool GetD3D11Present(void** pPresent) {
@@ -85,6 +105,18 @@ bool GetD3D11Present(void** pPresent) {
     *pPresent = vtbl[8];
     sc->Release(); dev->Release(); ctx->Release();
     DestroyWindow(hWnd); UnregisterClassA("CS2_ESP_Dummy", wc.hInstance);
+    return true;
+}
+
+bool GetCreateMove(void** pCreateMove) {
+    uintptr_t client = (uintptr_t)GetModuleHandleA("client.dll");
+    if (!client) return false;
+
+    uintptr_t csgoInput = *(uintptr_t*)(client + offset::dwCSGOInput);
+    if (!csgoInput) return false;
+
+    void** vtbl = *reinterpret_cast<void***>(csgoInput);
+    *pCreateMove = vtbl[24];
     return true;
 }
 
@@ -130,6 +162,12 @@ DWORD WINAPI MainThread(LPVOID lpReserved) {
     if (!GetD3D11Present(&pPresent)) return 0;
     if (MH_Initialize() != MH_OK) return 0;
     if (MH_CreateHook(pPresent, &hkPresent, reinterpret_cast<void**>(&oPresent)) != MH_OK) return 0;
+
+    void* pCreateMove = nullptr;
+    if (GetCreateMove(&pCreateMove)) {
+        MH_CreateHook(pCreateMove, &hkCreateMove, reinterpret_cast<void**>(&oCreateMove));
+    }
+
     MH_EnableHook(MH_ALL_HOOKS);
     g_hFOVThread = CreateThread(nullptr, 0, FOVThread, nullptr, 0, nullptr);
     while (!GetAsyncKeyState(VK_DELETE)) Sleep(100);

@@ -12,6 +12,9 @@ output/
 *.log
 *.recipe
 
+# Reference code
+asphyxia-cs2-master/
+
 # Visual Studio
 .vs/
 *.user

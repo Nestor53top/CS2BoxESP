@@ -62,6 +62,9 @@
 
     <ClCompile Include="src\Utils\Math.cpp" />
 
+    <ClCompile Include="src\features\aimbot.cpp" />
+    <ClCompile Include="src\features\bhop.cpp" />
+
     <ClCompile Include="ext\imgui\imgui.cpp" />
     <ClCompile Include="ext\imgui\imgui_draw.cpp" />
     <ClCompile Include="ext\imgui\imgui_tables.cpp" />
@@ -79,6 +82,9 @@
     <ClInclude Include="src\overlay.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\gui.h" />
+
+    <ClInclude Include="src\features\aimbot.h" />
+    <ClInclude Include="src\features\bhop.h" />
 
     <ClInclude Include="src\Utils\Offsets.h" />
     <ClInclude Include="src\Utils\Types.h" />
